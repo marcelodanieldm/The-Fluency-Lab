@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Fluency Lab - Hack Your Communication Skills</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+    <!-- Matrix Rain Background Effect -->
+    <canvas id="matrix-bg"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>THE FLUENCY LAB</h1>
+                <span class="subtitle">// Hack Your Communication</span>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>SYSTEM ONLINE</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="dashboard">
+        <div class="container">
+            
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <span class="terminal-title">⚙️ INPUT TERMINAL</span>
+                        <div class="terminal-controls">
+                            <span class="control"></span>
+                            <span class="control"></span>
+                            <span class="control"></span>
+                        </div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="input-group">
+                            <label for="transcription">
+                                <span class="prompt">$</span> Introduce tu transcripción:
+                            </label>
+                            <textarea 
+                                id="transcription" 
+                                placeholder="Escribe o pega tu texto aquí para analizar..."
+                                rows="6"
+                            ></textarea>
+                        </div>
+                        <div class="input-controls">
+                            <select id="language" class="language-select">
+                                <option value="es">🇪🇸 Español</option>
+                                <option value="en">🇬🇧 English</option>
+                            </select>
+                            <button id="analyzeBtn" class="btn-primary">
+                                <span class="btn-icon">▶</span>
+                                ANALIZAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading Animation -->
+            <div id="loading" class="loading-container" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">ANALIZANDO COMUNICACIÓN...</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results" class="results-section" style="display: none;">
+                
+                <!-- Main Metrics Grid -->
+                <section class="metrics-grid">
+                    <!-- Confidence Score Card -->
+                    <div class="metric-card card-glow-purple">
+                        <div class="metric-header">
+                            <span class="metric-icon">🎯</span>
+                            <h3>CONFIDENCE SCORE</h3>
+                        </div>
+                        <div class="metric-value">
+                            <span id="confidenceScore" class="big-number">--</span>
+                            <span class="metric-unit">/100</span>
+                        </div>
+                        <div class="metric-bar">
+                            <div id="confidenceBar" class="progress-bar"></div>
+                        </div>
+                        <p id="confidenceLevel" class="metric-label">--</p>
+                    </div>
+
+                    <!-- Tone Card -->
+                    <div class="metric-card card-glow-cyan">
+                        <div class="metric-header">
+                            <span class="metric-icon">💬</span>
+                            <h3>TONO DETECTADO</h3>
+                        </div>
+                        <div class="tone-display">
+                            <span id="toneEmoji" class="tone-emoji">🤖</span>
+                            <span id="toneName" class="tone-name">--</span>
+                        </div>
+                        <p id="toneDescription" class="metric-description">--</p>
+                    </div>
+
+                    <!-- Word Count Card -->
+                    <div class="metric-card card-glow-green">
+                        <div class="metric-header">
+                            <span class="metric-icon">📊</span>
+                            <h3>MÉTRICAS</h3>
+                        </div>
+                        <div class="stats-list">
+                            <div class="stat-item">
+                                <span class="stat-label">Palabras:</span>
+                                <span id="wordCount" class="stat-value">--</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Oraciones:</span>
+                                <span id="sentenceCount" class="stat-value">--</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Muletillas:</span>
+                                <span id="fillerCount" class="stat-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sentiment Card -->
+                    <div class="metric-card card-glow-pink">
+                        <div class="metric-header">
+                            <span class="metric-icon">😊</span>
+                            <h3>SENTIMIENTO</h3>
+                        </div>
+                        <div class="sentiment-display">
+                            <div class="sentiment-bar-container">
+                                <span class="sentiment-label">Negativo</span>
+                                <div class="sentiment-bar">
+                                    <div id="sentimentIndicator" class="sentiment-indicator"></div>
+                                </div>
+                                <span class="sentiment-label">Positivo</span>
+                            </div>
+                            <p id="sentimentScore" class="sentiment-score">Score: --</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Soft Skills Radar Chart -->
+                <section class="radar-section">
+                    <div class="radar-card">
+                        <div class="radar-header">
+                            <h2>
+                                <span class="radar-icon">🎯</span>
+                                SOFT SKILLS RADAR
+                                <span class="radar-subtitle">// Communication Hacking Dashboard</span>
+                            </h2>
+                        </div>
+                        <div class="radar-container">
+                            <canvas id="softSkillsRadar"></canvas>
+                        </div>
+                        <div class="radar-legend">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: var(--neon-pink)"></div>
+                                <span>Persuasión</span>
+                                <span id="persuasionValue" class="legend-value">--</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: var(--neon-cyan)"></div>
+                                <span>Claridad Técnica</span>
+                                <span id="clarityValue" class="legend-value">--</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: var(--neon-green)"></div>
+                                <span>Empatía</span>
+                                <span id="empathyValue" class="legend-value">--</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: var(--neon-purple)"></div>
+                                <span>Resolución de Conflictos</span>
+                                <span id="conflictValue" class="legend-value">--</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: var(--neon-orange)"></div>
+                                <span>Brevedad</span>
+                                <span id="brevityValue" class="legend-value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Advice Section -->
+                <section class="advice-section">
+                    <div class="advice-card">
+                        <div class="advice-header">
+                            <span class="advice-icon">💡</span>
+                            <h3>CONSEJOS DE COMUNICACIÓN ASERTIVA</h3>
+                        </div>
+                        <div id="adviceSummary" class="advice-summary">--</div>
+                        <div id="adviceList" class="advice-list"></div>
+                    </div>
+                </section>
+
+                <!-- Filler Words Section -->
+                <section class="filler-section" id="fillerSection" style="display: none;">
+                    <div class="filler-card">
+                        <div class="filler-header">
+                            <span class="filler-icon">⚠️</span>
+                            <h3>MULETILLAS DETECTADAS</h3>
+                        </div>
+                        <div id="fillerList" class="filler-list"></div>
+                    </div>
+                </section>
+
+                <!-- Learning Path Section -->
+                <section class="learning-path-section" id="learningPathSection" style="display: none;">
+                    <div class="learning-path-card">
+                        <div class="learning-path-header">
+                            <span class="path-icon">🎓</span>
+                            <h2>RUTA DE APRENDIZAJE DINÁMICA</h2>
+                            <span class="path-subtitle">// Personalized Learning Journey</span>
+                        </div>
+
+                        <!-- Profile Summary -->
+                        <div class="profile-summary">
+                            <div class="profile-stat">
+                                <span class="stat-label">Nivel General</span>
+                                <span id="overallLevel" class="stat-value-lg">--</span>
+                            </div>
+                            <div class="profile-stat">
+                                <span class="stat-label">Áreas Fuertes</span>
+                                <span id="strengthsCount" class="stat-value-lg text-green">--</span>
+                            </div>
+                            <div class="profile-stat">
+                                <span class="stat-label">Áreas a Mejorar</span>
+                                <span id="weakAreasCount" class="stat-value-lg text-pink">--</span>
+                            </div>
+                            <div class="profile-stat">
+                                <span class="stat-label">Progreso Estimado</span>
+                                <span id="progressEstimate" class="stat-value-lg text-cyan">--</span>
+                            </div>
+                        </div>
+
+                        <!-- Weekly Plan -->
+                        <div class="weekly-plan">
+                            <h3 class="section-title">
+                                <span class="title-icon">📅</span>
+                                PLAN SEMANAL RECOMENDADO
+                            </h3>
+                            <div id="weeklyLessons" class="lessons-grid"></div>
+                        </div>
+
+                        <!-- Monthly Goals -->
+                        <div class="monthly-goals">
+                            <h3 class="section-title">
+                                <span class="title-icon">🎯</span>
+                                OBJETIVOS MENSUALES
+                            </h3>
+                            <div id="monthlyGoalsList" class="goals-list"></div>
+                        </div>
+
+                        <!-- AI Recommendations -->
+                        <div class="ai-recommendations">
+                            <h3 class="section-title">
+                                <span class="title-icon">🤖</span>
+                                RECOMENDACIONES DE IA
+                            </h3>
+                            <div id="aiRecommendations" class="recommendations-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Skill Tree Section -->
+                <section class="skill-tree-section" id="skillTreeSection" style="display: none;">
+                    <div class="skill-tree-card">
+                        <div class="skill-tree-header">
+                            <span class="tree-icon">🌳</span>
+                            <h2>SKILL TREE - SPRINT PROGRESS</h2>
+                            <span class="tree-subtitle">// Complete missions to unlock new skills</span>
+                        </div>
+
+                        <!-- Progress Stats -->
+                        <div class="tree-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Completed</span>
+                                <span id="completedNodes" class="stat-value">0/4</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Sprint XP</span>
+                                <span id="sprintXP" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Success Rate</span>
+                                <span id="successRate" class="stat-value">0%</span>
+                            </div>
+                        </div>
+
+                        <!-- Skill Tree Visualization -->
+                        <div class="skill-tree-container">
+                            <svg class="tree-connections" id="treeConnections">
+                                <!-- Connections will be drawn here dynamically -->
+                            </svg>
+                            
+                            <div class="tree-nodes">
+                                <!-- Week 1 -->
+                                <div class="tree-node locked" data-week="1" data-skill="Conflict Resolution">
+                                    <div class="node-glow"></div>
+                                    <div class="node-content">
+                                        <div class="node-icon">⚔️</div>
+                                        <div class="node-label">WEEK 1</div>
+                                        <div class="node-skill">Conflict Resolution</div>
+                                        <div class="node-score">--/100</div>
+                                        <div class="node-status">LOCKED</div>
+                                    </div>
+                                    <div class="node-particles"></div>
+                                </div>
+
+                                <!-- Week 2 -->
+                                <div class="tree-node locked" data-week="2" data-skill="Technical Clarity">
+                                    <div class="node-glow"></div>
+                                    <div class="node-content">
+                                        <div class="node-icon">💡</div>
+                                        <div class="node-label">WEEK 2</div>
+                                        <div class="node-skill">Technical Clarity</div>
+                                        <div class="node-score">--/100</div>
+                                        <div class="node-status">LOCKED</div>
+                                    </div>
+                                    <div class="node-particles"></div>
+                                </div>
+
+                                <!-- Week 3 -->
+                                <div class="tree-node locked" data-week="3" data-skill="Persuasion">
+                                    <div class="node-glow"></div>
+                                    <div class="node-content">
+                                        <div class="node-icon">🎯</div>
+                                        <div class="node-label">WEEK 3</div>
+                                        <div class="node-skill">Persuasion</div>
+                                        <div class="node-score">--/100</div>
+                                        <div class="node-status">LOCKED</div>
+                                    </div>
+                                    <div class="node-particles"></div>
+                                </div>
+
+                                <!-- Week 4 -->
+                                <div class="tree-node locked" data-week="4" data-skill="Empathy">
+                                    <div class="node-glow"></div>
+                                    <div class="node-content">
+                                        <div class="node-icon">❤️</div>
+                                        <div class="node-label">WEEK 4</div>
+                                        <div class="node-skill">Empathy</div>
+                                        <div class="node-score">--/100</div>
+                                        <div class="node-status">LOCKED</div>
+                                    </div>
+                                    <div class="node-particles"></div>
+                                </div>
+
+                                <!-- Final Achievement -->
+                                <div class="tree-node achievement locked" data-week="final">
+                                    <div class="node-glow"></div>
+                                    <div class="node-content">
+                                        <div class="node-icon">👑</div>
+                                        <div class="node-label">MASTER</div>
+                                        <div class="node-skill">Communication Expert</div>
+                                        <div class="node-status">LOCKED</div>
+                                    </div>
+                                    <div class="node-particles"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Controls -->
+                        <div class="tree-controls">
+                            <button id="simulateSession" class="tree-button">
+                                <span>🎮</span> Simulate Session
+                            </button>
+                            <button id="resetProgress" class="tree-button secondary">
+                                <span>🔄</span> Reset Progress
+                            </button>
+                        </div>
+
+                        <!-- Session History -->
+                        <div class="session-history">
+                            <h3 class="section-title">
+                                <span class="title-icon">📊</span>
+                                SESSION HISTORY
+                            </h3>
+                            <div id="sessionHistoryList" class="history-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- English Level Section (only for English texts) -->
+                <section class="english-level-section" id="englishLevelSection" style="display: none;">
+                    <div class="english-level-card">
+                        <div class="english-level-header">
+                            <span class="level-icon">🇬🇧</span>
+                            <h2>ENGLISH LEVEL EVALUATION</h2>
+                            <span class="level-subtitle">// CEFR Framework Assessment</span>
+                        </div>
+
+                        <!-- CEFR Level Display -->
+                        <div class="cefr-display">
+                            <div class="cefr-badge-container">
+                                <div class="cefr-badge">
+                                    <span class="badge-label">CEFR Level</span>
+                                    <span id="cefrLevel" class="badge-level">--</span>
+                                </div>
+                                <div class="level-score">
+                                    <span class="score-label">Overall Score</span>
+                                    <span id="levelScore" class="score-number">--</span>
+                                </div>
+                            </div>
+                            <p id="cefrDescription" class="cefr-description">--</p>
+                        </div>
+
+                        <!-- Analysis Metrics -->
+                        <div class="analysis-metrics">
+                            <div class="metric-group">
+                                <h4 class="group-title">📚 Lexical Analysis</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-item">
+                                        <span class="metric-name">Lexical Density</span>
+                                        <span id="lexicalDensity" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Lexical Diversity</span>
+                                        <span id="lexicalDiversity" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Academic Vocabulary</span>
+                                        <span id="academicVocab" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Avg Word Length</span>
+                                        <span id="avgWordLength" class="metric-val">--</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="metric-group">
+                                <h4 class="group-title">📝 Grammatical Complexity</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-item">
+                                        <span class="metric-name">Complexity Score</span>
+                                        <span id="complexityScore" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Relative Clauses</span>
+                                        <span id="relativeClauses" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Passive Voice</span>
+                                        <span id="passiveVoice" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Advanced Connectors</span>
+                                        <span id="advancedConnectors" class="metric-val">--</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="metric-group">
+                                <h4 class="group-title">🔤 Sentence Structure</h4>
+                                <div class="metrics-grid">
+                                    <div class="metric-item">
+                                        <span class="metric-name">Simple Structures</span>
+                                        <span id="simpleStructures" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Complex Structures</span>
+                                        <span id="complexStructures" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Avg Words/Sentence</span>
+                                        <span id="avgWordsPerSent" class="metric-val">--</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-name">Simple %</span>
+                                        <span id="simplePercentage" class="metric-val">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Strengths & Weaknesses -->
+                        <div class="strengths-weaknesses">
+                            <div class="strength-box">
+                                <h4>✅ Strengths</h4>
+                                <ul id="strengthsList" class="points-list"></ul>
+                            </div>
+                            <div class="weakness-box">
+                                <h4>⚠️ Areas for Improvement</h4>
+                                <ul id="weaknessesList" class="points-list"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Recommended Exercises -->
+                        <div class="recommended-exercises">
+                            <h3 class="section-title">
+                                <span class="title-icon">📖</span>
+                                RECOMMENDED EXERCISES
+                            </h3>
+                            <div id="exercisesList" class="exercises-list"></div>
+                        </div>
+
+                        <!-- Feedback -->
+                        <div class="english-feedback">
+                            <h3 class="section-title">
+                                <span class="title-icon">💬</span>
+                                PERSONALIZED FEEDBACK
+                            </h3>
+                            <div id="englishFeedbackList" class="feedback-cards"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Error Analysis Section (only for English texts) -->
+                <section class="error-analysis-section" id="errorAnalysisSection" style="display: none;">
+                    <div class="error-analysis-card">
+                        <div class="error-analysis-header">
+                            <span class="error-icon">🔍</span>
+                            <h2>ERROR PATTERN ANALYSIS</h2>
+                            <span class="error-subtitle">// Real-time error detection</span>
+                        </div>
+
+                        <!-- Error Summary -->
+                        <div class="error-summary">
+                            <div class="summary-stat">
+                                <span class="stat-label">Errors Detected</span>
+                                <span id="errorCount" class="stat-value">0</span>
+                            </div>
+                            <div class="summary-stat">
+                                <span class="stat-label">Categories</span>
+                                <span id="categoryCount" class="stat-value">0</span>
+                            </div>
+                            <div class="summary-stat">
+                                <span class="stat-label">Severity</span>
+                                <span id="avgSeverity" class="stat-value">--</span>
+                            </div>
+                        </div>
+
+                        <!-- Detected Errors List -->
+                        <div class="detected-errors">
+                            <h3 class="section-title">
+                                <span class="title-icon">⚠️</span>
+                                DETECTED ERRORS
+                            </h3>
+                            <div id="errorsList" class="errors-list"></div>
+                        </div>
+
+                        <!-- Suggestions -->
+                        <div class="error-suggestions">
+                            <h3 class="section-title">
+                                <span class="title-icon">💡</span>
+                                IMPROVEMENT SUGGESTIONS
+                            </h3>
+                            <div id="suggestionsList" class="suggestions-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Flashcards Section (Weekend Practice) -->
+                <section class="flashcards-section" id="flashcardsSection" style="display: none;">
+                    <div class="flashcards-card">
+                        <div class="flashcards-header">
+                            <span class="flashcard-icon">🎴</span>
+                            <h2>WEEKEND FLASHCARD DECK</h2>
+                            <span class="flashcard-subtitle">// Personalized practice based on your errors</span>
+                        </div>
+
+                        <!-- Deck Info -->
+                        <div class="deck-info">
+                            <div class="info-item">
+                                <span class="info-icon">📚</span>
+                                <span class="info-label">Total Cards:</span>
+                                <span id="deckTotalCards" class="info-value">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-icon">⏱️</span>
+                                <span class="info-label">Est. Time:</span>
+                                <span id="deckEstTime" class="info-value">--</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-icon">📊</span>
+                                <span class="info-label">Difficulty:</span>
+                                <span id="deckDifficulty" class="info-value">--</span>
+                            </div>
+                        </div>
+
+                        <!-- Generate Deck Button -->
+                        <div class="deck-actions">
+                            <button id="generateDeckBtn" class="deck-button">
+                                <span>🎮</span> Generate My Flashcard Deck
+                            </button>
+                        </div>
+
+                        <!-- Flashcards Container -->
+                        <div id="flashcardsContainer" class="flashcards-container" style="display: none;">
+                            <!-- Flashcards will be dynamically inserted here -->
+                        </div>
+
+                        <!-- Study Tips -->
+                        <div id="studyTipsContainer" class="study-tips" style="display: none;">
+                            <h3 class="section-title">
+                                <span class="title-icon">📝</span>
+                                STUDY TIPS
+                            </h3>
+                            <div id="studyTipsList" class="tips-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 The Fluency Lab - Powered by AI & NLP | <span class="footer-accent">Hack Your Skills</span></p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
