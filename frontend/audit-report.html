@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linguistic Audit Report Card | The Fluency Lab</title>
+  <link rel="stylesheet" href="audit-report.css">
+</head>
+<body>
+  <!-- Background Animation -->
+  <div class="background-gradient"></div>
+  
+  <!-- Main Container -->
+  <div class="container">
+    
+    <!-- Header -->
+    <header class="report-header">
+      <div class="logo">
+        <span class="logo-icon">🎯</span>
+        <h1>THE FLUENCY LAB</h1>
+      </div>
+      <div class="report-title">
+        <h2>Linguistic Audit Report Card</h2>
+        <p class="subtitle">AI-Powered CEFR Level Analysis</p>
+      </div>
+    </header>
+
+    <!-- Level Badge Section -->
+    <section class="level-badge-section">
+      <div class="current-level-container">
+        <div class="level-label">YOUR CURRENT LEVEL</div>
+        <div id="levelBadge" class="level-badge level-b1">
+          <div class="badge-inner">
+            <span id="levelText" class="level-text">B1</span>
+            <div class="badge-glow"></div>
+          </div>
+        </div>
+        <div class="confidence-bar">
+          <div class="confidence-label">
+            <span>Confidence</span>
+            <span id="confidencePercent">0%</span>
+          </div>
+          <div class="confidence-track">
+            <div id="confidenceFill" class="confidence-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Level Progression -->
+      <div class="level-progression">
+        <div class="progression-item" data-level="B1">
+          <div class="progression-circle level-b1">B1</div>
+          <div class="progression-label">Intermediate</div>
+        </div>
+        <div class="progression-line"></div>
+        <div class="progression-item" data-level="B2">
+          <div class="progression-circle level-b2">B2</div>
+          <div class="progression-label">Upper Inter.</div>
+        </div>
+        <div class="progression-line"></div>
+        <div class="progression-item" data-level="C1">
+          <div class="progression-circle level-c1">C1</div>
+          <div class="progression-label">Advanced</div>
+        </div>
+        <div class="progression-line"></div>
+        <div class="progression-item" data-level="C2">
+          <div class="progression-circle level-c2">C2</div>
+          <div class="progression-label">Mastery</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- You vs. Senior Dev Section -->
+    <section class="comparison-section">
+      <h3 class="section-title">
+        <span class="title-icon">🏆</span>
+        You vs. Senior Dev at Google
+      </h3>
+      
+      <div class="comparison-grid">
+        <!-- Technical Vocabulary -->
+        <div class="comparison-card">
+          <div class="comparison-header">
+            <span class="metric-icon">💼</span>
+            <h4>Technical Vocabulary</h4>
+          </div>
+          <div class="comparison-bars">
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="user-label">You</span>
+                <span id="yourVocabScore" class="score">0%</span>
+              </div>
+              <div class="bar-track">
+                <div id="yourVocabBar" class="bar-fill user-bar" data-value="0"></div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="benchmark-label">Google Senior Dev</span>
+                <span class="score">95%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill benchmark-bar" data-value="95"></div>
+              </div>
+            </div>
+          </div>
+          <div class="comparison-insight">
+            <span id="vocabInsight">Loading...</span>
+          </div>
+        </div>
+
+        <!-- Soft Skills -->
+        <div class="comparison-card">
+          <div class="comparison-header">
+            <span class="metric-icon">🤝</span>
+            <h4>Communication Soft Skills</h4>
+          </div>
+          <div class="comparison-bars">
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="user-label">You</span>
+                <span id="yourSoftScore" class="score">0/10</span>
+              </div>
+              <div class="bar-track">
+                <div id="yourSoftBar" class="bar-fill user-bar" data-value="0"></div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="benchmark-label">Google Senior Dev</span>
+                <span class="score">9/10</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill benchmark-bar" data-value="90"></div>
+              </div>
+            </div>
+          </div>
+          <div class="comparison-insight">
+            <span id="softInsight">Loading...</span>
+          </div>
+        </div>
+
+        <!-- Hesitation (Lower is Better) -->
+        <div class="comparison-card">
+          <div class="comparison-header">
+            <span class="metric-icon">🎯</span>
+            <h4>Confidence (Lower Hesitation)</h4>
+          </div>
+          <div class="comparison-bars">
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="user-label">You</span>
+                <span id="yourHesitationScore" class="score">0%</span>
+              </div>
+              <div class="bar-track">
+                <div id="yourHesitationBar" class="bar-fill user-bar inverse" data-value="0"></div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="benchmark-label">Google Senior Dev</span>
+                <span class="score">0.5%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill benchmark-bar inverse" data-value="5"></div>
+              </div>
+            </div>
+          </div>
+          <div class="comparison-insight">
+            <span id="hesitationInsight">Loading...</span>
+          </div>
+        </div>
+
+        <!-- Grammar Accuracy -->
+        <div class="comparison-card">
+          <div class="comparison-header">
+            <span class="metric-icon">✅</span>
+            <h4>Grammar & False Friends</h4>
+          </div>
+          <div class="comparison-bars">
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="user-label">You</span>
+                <span id="yourGrammarScore" class="score">0%</span>
+              </div>
+              <div class="bar-track">
+                <div id="yourGrammarBar" class="bar-fill user-bar" data-value="0"></div>
+              </div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">
+                <span class="benchmark-label">Google Senior Dev</span>
+                <span class="score">98%</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill benchmark-bar" data-value="98"></div>
+              </div>
+            </div>
+          </div>
+          <div class="comparison-insight">
+            <span id="grammarInsight">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Critical Alerts Section -->
+    <section id="alertsSection" class="alerts-section" style="display: none;">
+      <h3 class="section-title">
+        <span class="title-icon">⚠️</span>
+        Critical Issues Detected
+      </h3>
+      <div id="alertsContainer" class="alerts-container"></div>
+    </section>
+
+    <!-- Top 3 Mistakes -->
+    <section id="mistakesSection" class="mistakes-section">
+      <h3 class="section-title">
+        <span class="title-icon">🔍</span>
+        Top 3 Areas for Improvement
+      </h3>
+      <div id="mistakesContainer" class="mistakes-container"></div>
+    </section>
+
+    <!-- Power Vocabulary Upgrade -->
+    <section id="powerVocabSection" class="power-vocab-section" style="display: none;">
+      <h3 class="section-title">
+        <span class="title-icon">⚡</span>
+        Power Vocabulary Upgrade
+      </h3>
+      <div class="power-vocab-card">
+        <div class="vocab-upgrade">
+          <div class="vocab-before">
+            <div class="vocab-label">Basic (B1)</div>
+            <div id="basicWord" class="vocab-word basic">problem</div>
+          </div>
+          <div class="vocab-arrow">→</div>
+          <div class="vocab-after">
+            <div class="vocab-label">Professional (C2)</div>
+            <div id="powerWord" class="vocab-word power">bottleneck</div>
+          </div>
+        </div>
+        <div class="vocab-example">
+          <div class="example-label">💡 Example Usage:</div>
+          <p id="vocabExample" class="example-text">Loading...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Level-Up Progress -->
+    <section class="levelup-section">
+      <h3 class="section-title">
+        <span class="title-icon">📈</span>
+        Progress to Next Level
+      </h3>
+      <div class="levelup-container">
+        <div class="levelup-info">
+          <div class="levelup-current">Current: <span id="currentLevelText">B2</span></div>
+          <div class="levelup-target">Target: <span id="targetLevelText">C1</span></div>
+        </div>
+        <div class="levelup-progress">
+          <div class="progress-label">
+            <span id="progressText">0 of 3 sessions at C1 level</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div id="levelupMessage" class="levelup-message">
+          Complete 3 sessions at C1 level to unlock Week 3 content!
+        </div>
+      </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button id="newSessionBtn" class="btn btn-primary">
+        <span class="btn-icon">🚀</span>
+        Start New Crisis Session
+      </button>
+      <button id="viewHistoryBtn" class="btn btn-secondary">
+        <span class="btn-icon">📊</span>
+        View Audit History
+      </button>
+    </div>
+
+  </div>
+
+  <script src="audit-report.js"></script>
+</body>
+</html>
