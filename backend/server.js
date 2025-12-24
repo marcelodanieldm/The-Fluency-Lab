@@ -6,6 +6,7 @@ const flashcardsRouter = require('./routes/flashcards');
 const authRouter = require('./routes/auth');
 const pricingRouter = require('./routes/pricing');
 const aiCoachRouter = require('./routes/aiCoach');
+const crisisCoachRouter = require('./routes/crisisCoach');
 const { optionalAuthenticate, authenticate } = require('./middleware/auth');
 
 const app = express();
@@ -30,6 +31,9 @@ app.use('/api/pricing', authenticate, pricingRouter);
 
 // AI Coach for interactive 10-minute sessions (requires authentication)
 app.use('/api/coach', authenticate, aiCoachRouter);
+
+// Crisis Coach for high-pressure crisis scenarios (requires authentication)
+app.use('/api/crisis', authenticate, crisisCoachRouter);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -58,6 +62,12 @@ app.listen(PORT, () => {
   console.log('   POST /api/coach/end-session - End session & get Flash Report');
   console.log('   GET  /api/coach/topics - View available topics');
   console.log('   GET  /api/coach/demo - See demo conversation');
+  console.log('\n🚨 Crisis Coach (High-Pressure Training):');
+  console.log('   POST /api/crisis/start - Start crisis scenario');
+  console.log('   POST /api/crisis/respond - Respond under pressure');
+  console.log('   POST /api/crisis/end - End session & get Crisis Audit');
+  console.log('   GET  /api/crisis/scenarios - View available scenarios');
+  console.log('   GET  /api/crisis/demo - See crisis training info');
   console.log('\n✅ Test Users Available:');
   console.log('   free@fluencylab.com / FluencyLab2024!');
   console.log('   student@fluencylab.com / FluencyLab2024!');
