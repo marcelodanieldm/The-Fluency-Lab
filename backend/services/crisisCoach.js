@@ -923,11 +923,164 @@ function getRandomItem(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+/**
+ * Get scenario based on user level and week number
+ * Week 2 = Crisis scenarios with level-adapted dialogue
+ * @param {string} user_level - B1, B2, C1, or C2
+ * @param {number} week_number - Current training week (1-4+)
+ * @returns {object} Scenario adapted to user level
+ */
+function get_scenario(user_level, week_number) {
+  // Week 2 = Crisis scenarios
+  if (week_number === 2) {
+    // Get all crisis scenario IDs
+    const crisisScenarioIds = Object.keys(CRISIS_SCENARIOS);
+    
+    // Randomly select one crisis scenario
+    const selectedId = getRandomItem(crisisScenarioIds);
+    const baseScenario = CRISIS_SCENARIOS[selectedId];
+    
+    // Deep clone the scenario to avoid modifying the original
+    const adaptedScenario = JSON.parse(JSON.stringify(baseScenario));
+    
+    // Adapt dialogues and complexity based on user level
+    adaptedScenario.adapted_for_level = user_level;
+    adaptedScenario.description = adaptScenarioDescription(baseScenario, user_level);
+    adaptedScenario.coach_personality = adaptCoachPersonality(baseScenario.coach_personality, user_level);
+    adaptedScenario.initial_prompt = generateInitialPrompt(baseScenario, user_level);
+    adaptedScenario.follow_up_prompts = generateFollowUpPrompts(baseScenario, user_level);
+    
+    return adaptedScenario;
+  }
+  
+  // For other weeks, return null (can be extended later)
+  return null;
+}
+
+/**
+ * Adapt scenario description to user level
+ * B1: Simple, direct language
+ * B2: Standard business English
+ * C1: Professional with some idioms
+ * C2: Advanced with corporate idioms and nuance
+ */
+function adaptScenarioDescription(scenario, level) {
+  const descriptions = {
+    production_outage: {
+      B1: "The main database is down. The CEO is asking for updates on Slack. What do you say?",
+      B2: "The main database is down, and customers are reporting errors. The CEO is on the Slack channel asking for updates. What do you say?",
+      C1: "We're facing a critical database outage during peak hours. The CEO is on Slack demanding immediate updates as revenue is at risk. How do you respond?",
+      C2: "We've got a full-blown production crisis - the database is down during peak traffic, customers are up in arms, and the CEO is breathing down our necks on Slack. How do you navigate this minefield?"
+    },
+    investor_meeting: {
+      B1: "Your product demo crashed during an important investor meeting. The investor is waiting. What do you do?",
+      B2: "Your product demo just crashed during a Series A pitch. The lead investor is waiting. How do you recover?",
+      C1: "Your live demo just went south in the middle of a high-stakes Series A pitch. The lead investor looks skeptical, and your CEO is sweating bullets. How do you pivot?",
+      C2: "The demo imploded spectacularly mid-pitch, the investors are losing faith by the second, and you can feel your $5M Series A slipping through your fingers. Time to pull a rabbit out of the hat - what's your play?"
+    },
+    client_escalation: {
+      B1: "A big client is angry about bugs and wants to cancel their contract. They want answers now. What do you say?",
+      B2: "A major client threatens to cancel their $100K contract due to repeated bugs. They want answers NOW.",
+      C1: "One of your premium clients is at their breaking point after three days of critical issues - they're threatening to pull their six-figure contract unless you deliver immediate solutions. What's your approach?",
+      C2: "Your whale client is about to jump ship - three days of showstopper bugs have pushed them over the edge, and they're ready to tear up their $100K contract. You've got 24 hours to turn this around or watch your ARR take a nosedive. How do you play damage control?"
+    }
+  };
+  
+  return descriptions[scenario.id]?.[level] || scenario.description;
+}
+
+/**
+ * Adapt coach personality based on user level
+ * Higher levels = more impatient, more demanding
+ */
+function adaptCoachPersonality(basePersonality, level) {
+  const levelModifiers = {
+    B1: { patience: 1, pressureRate: -0.2, interruption: 'medium' },
+    B2: { patience: 0, pressureRate: 0, interruption: 'high' },
+    C1: { patience: -0.5, pressureRate: 0.1, interruption: 'high' },
+    C2: { patience: -1, pressureRate: 0.2, interruption: 'very high' }
+  };
+  
+  const modifier = levelModifiers[level] || levelModifiers.B2;
+  
+  return {
+    initial_patience: Math.max(1, basePersonality.initial_patience + modifier.patience),
+    pressure_increase_rate: basePersonality.pressure_increase_rate + modifier.pressureRate,
+    interruption_frequency: modifier.interruption,
+    tone: basePersonality.tone
+  };
+}
+
+/**
+ * Generate level-adapted initial prompt
+ */
+function generateInitialPrompt(scenario, level) {
+  const prompts = {
+    B1: {
+      production_outage: "The CEO just wrote: 'What is happening? Fix it fast!' Your response?",
+      investor_meeting: "The investor says: 'Your demo is broken. Can you show us something else?' Your response?",
+      client_escalation: "The client wrote: 'We have too many problems. We will cancel the contract.' Your response?"
+    },
+    B2: {
+      production_outage: "The CEO messages: 'Database is down? Give me a status update ASAP. Customers are complaining.' Your response?",
+      investor_meeting: "The lead investor asks: 'The demo crashed. Do you have a backup plan? We need to see results.' Your response?",
+      client_escalation: "The client VP writes: 'Three days of bugs. This is unacceptable. We're considering cancellation.' Your response?"
+    },
+    C1: {
+      production_outage: "CEO on Slack: 'Production is down, customers are furious, and I'm getting heat from the board. What's the ETA on resolution and what caused this?' Your move?",
+      investor_meeting: "Lead investor: 'That's unfortunate timing. Look, we're on a tight schedule - can you pivot to showing us your traction metrics and product-market fit instead?' How do you respond?",
+      client_escalation: "Client VP: 'We've been patient, but this is the third incident this week. Our team is losing confidence. Give me one good reason not to pull the plug on this contract.' Your response?"
+    },
+    C2: {
+      production_outage: "CEO Slack bomb: 'We're hemorrhaging customers, the board is on my case, and I need to know yesterday what went wrong and when we'll be back online. Don't sugarcoat it - give me the full picture.' Time to face the music - what do you say?",
+      investor_meeting: "Lead investor, arms crossed: 'Well, that's a rough start. Listen, we've seen a hundred pitches this quarter, and technical hiccups are red flags. You've got 60 seconds to convince me you're not just smoke and mirrors.' Clock's ticking - how do you salvage this?",
+      client_escalation: "Client VP, clearly fed up: 'I've got my CFO breathing down my neck, your bugs are costing us real money, and frankly, you're making me look bad for betting on your platform. I need a concrete action plan by EOD or we're walking. Ball's in your court.' How do you bring them back from the brink?"
+    }
+  };
+  
+  return prompts[level]?.[scenario.id] || `The situation is critical. What do you say?`;
+}
+
+/**
+ * Generate follow-up prompts that escalate pressure (level-adapted)
+ */
+function generateFollowUpPrompts(scenario, level) {
+  const followUps = {
+    B1: [
+      "That's good, but give me more details. What exactly is the problem?",
+      "Okay, but when will it be fixed? Give me a time.",
+      "What is your team doing right now?",
+      "Is there a backup plan?"
+    ],
+    B2: [
+      "I need more specifics. What's the root cause?",
+      "That's fine, but what's the ETA? Be precise.",
+      "What concrete steps are you taking?",
+      "How are you preventing this from happening again?"
+    ],
+    C1: [
+      "You're being too vague. I need technical details - what's the actual root cause here?",
+      "A timeline would be helpful. What's your realistic ETA for full restoration?",
+      "Walk me through your mitigation strategy. What's the action plan?",
+      "This sounds reactive. What preventive measures are you putting in place?"
+    ],
+    C2: [
+      "Cut the corporate speak - what's the real root cause, and don't tell me you're still investigating.",
+      "I need a hard ETA with your confidence level. Are we talking minutes, hours, or should I start making calls?",
+      "That's strategy consultant talk. Give me the ground-level playbook - who's doing what, right now?",
+      "I'm not hearing proactive thinking. What's the post-mortem game plan to ensure we never have this conversation again?"
+    ]
+  };
+  
+  return followUps[level] || followUps.B2;
+}
+
 module.exports = {
   startCrisisSession,
   processCrisisResponse,
   endCrisisSession,
   getCrisisScenarios,
   getSessionDetails,
+  get_scenario,
   CRISIS_SCENARIOS
 };

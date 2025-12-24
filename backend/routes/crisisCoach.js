@@ -32,6 +32,67 @@ router.get('/scenarios', (req, res) => {
 });
 
 /**
+ * @route   POST /api/crisis/get-scenario
+ * @desc    Get level-adapted scenario for specific week
+ * @access  Public (demo purposes) - Add auth in production
+ * @body    { user_level, week_number }
+ */
+router.post('/get-scenario', (req, res) => {
+  try {
+    const { user_level, week_number } = req.body;
+    
+    if (!user_level || !week_number) {
+      return res.status(400).json({
+        success: false,
+        message: 'user_level and week_number are required'
+      });
+    }
+    
+    // Validate user level
+    const validLevels = ['B1', 'B2', 'C1', 'C2'];
+    if (!validLevels.includes(user_level)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid user_level. Must be one of: ${validLevels.join(', ')}`
+      });
+    }
+    
+    const scenario = crisisCoach.get_scenario(user_level, week_number);
+    
+    if (!scenario) {
+      return res.status(404).json({
+        success: false,
+        message: `No scenario available for week ${week_number}. Currently only week 2 (crisis scenarios) is supported.`
+      });
+    }
+    
+    res.json({
+      success: true,
+      scenario: {
+        id: scenario.id,
+        title: scenario.title,
+        description: scenario.description,
+        difficulty: scenario.difficulty,
+        duration_minutes: scenario.duration_minutes,
+        adapted_for_level: scenario.adapted_for_level,
+        initial_prompt: scenario.initial_prompt,
+        follow_up_prompts: scenario.follow_up_prompts,
+        coach_personality: scenario.coach_personality,
+        target_jargon: scenario.target_jargon
+      },
+      message: `Crisis scenario for ${user_level} level, week ${week_number} retrieved successfully`
+    });
+  } catch (error) {
+    console.error('Error getting scenario:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get scenario',
+      error: error.message
+    });
+  }
+});
+
+/**
  * @route   POST /api/crisis/start
  * @desc    Start a new crisis coaching session
  * @access  Public (demo purposes) - Add auth in production
