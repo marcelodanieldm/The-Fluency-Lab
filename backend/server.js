@@ -7,6 +7,7 @@ const authRouter = require('./routes/auth');
 const pricingRouter = require('./routes/pricing');
 const aiCoachRouter = require('./routes/aiCoach');
 const crisisCoachRouter = require('./routes/crisisCoach');
+const levelingRouter = require('./routes/leveling');
 const { optionalAuthenticate, authenticate } = require('./middleware/auth');
 
 const app = express();
@@ -34,6 +35,9 @@ app.use('/api/coach', authenticate, aiCoachRouter);
 
 // Crisis Coach for high-pressure crisis scenarios (requires authentication)
 app.use('/api/crisis', authenticate, crisisCoachRouter);
+
+// Dynamic Leveling System with level-up notifications (requires authentication)
+app.use('/api/leveling', authenticate, levelingRouter);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -68,6 +72,12 @@ app.listen(PORT, () => {
   console.log('   POST /api/crisis/end - End session & get Crisis Audit');
   console.log('   GET  /api/crisis/scenarios - View available scenarios');
   console.log('   GET  /api/crisis/demo - See crisis training info');
+  console.log('\n📈 Dynamic Leveling & Notifications:');
+  console.log('   GET  /api/leveling/status/:userId - Check level & progress');
+  console.log('   GET  /api/leveling/notifications/:userId - Get level-up notifications');
+  console.log('   POST /api/leveling/accept-level-up - Accept level upgrade');
+  console.log('   GET  /api/leveling/audit-history/:userId - View audit history');
+  console.log('   GET  /api/leveling/demo - System documentation');
   console.log('\n✅ Test Users Available:');
   console.log('   free@fluencylab.com / FluencyLab2024!');
   console.log('   student@fluencylab.com / FluencyLab2024!');

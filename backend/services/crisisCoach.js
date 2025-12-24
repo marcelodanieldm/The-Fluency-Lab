@@ -6,6 +6,8 @@
 
 const natural = require('natural');
 const tokenizer = new natural.WordTokenizer();
+const linguisticAuditor = require('./linguisticAuditor');
+const levelingService = require('./levelingService');
 
 // Crisis Scenarios - Each with specific context and pressure points
 const CRISIS_SCENARIOS = {
@@ -270,6 +272,25 @@ function processCrisisResponse(sessionId, userMessage) {
     response_time: responseTime
   });
   
+  // ===== LINGUISTIC AUDIT INTEGRATION =====
+  // Perform comprehensive linguistic analysis
+  const linguisticAudit = linguisticAuditor.auditResponse(
+    userMessage, 
+    session.scenario.context.situation
+  );
+  
+  // Record audit in leveling system
+  const levelingResult = levelingService.recordAudit(session.userId, linguisticAudit);
+  
+  // Store audit in session for final report
+  session.linguistic_audits = session.linguistic_audits || [];
+  session.linguistic_audits.push({
+    timestamp: now,
+    audit: linguisticAudit,
+    leveling_result: levelingResult
+  });
+  // ===== END LINGUISTIC AUDIT =====
+  
   // Analyze the response
   const analysis = analyzeCrisisResponse(userMessage, session);
   
@@ -298,7 +319,8 @@ function processCrisisResponse(sessionId, userMessage) {
   
   const timeRemaining = Math.max(0, timeLimit - elapsed);
   
-  return {
+  // Prepare response with linguistic audit results
+  const response = {
     sessionId,
     coachMessage: coachResponse.message,
     feedback: coachResponse.feedback,
@@ -308,8 +330,23 @@ function processCrisisResponse(sessionId, userMessage) {
       jargon_score: session.metrics.jargon_score,
       tone: session.metrics.tone_classification,
       coach_patience: session.metrics.coach_patience_level
+    },
+    linguistic_audit: {
+      detected_level: linguisticAudit.current_level,
+      confidence: linguisticAudit.confidence_percentage,
+      soft_skill_score: linguisticAudit.soft_skill_score,
+      top_mistake: linguisticAudit.top_3_mistakes[0] || null,
+      power_vocab_tip: linguisticAudit.power_vocabulary_suggestion
     }
   };
+  
+  // Add level-up notification if triggered
+  if (levelingResult.level_up_triggered) {
+    response.level_up_notification = levelingResult.notification;
+    response.achievement_unlocked = true;
+  }
+  
+  return response;
 }
 
 /**
@@ -612,6 +649,12 @@ function endCrisisSession(sessionId) {
       final_coach_patience: Math.round(session.metrics.coach_patience_level * 10) / 10,
       rating: getPerformanceRating(session.metrics.pressure_resistance)
     },
+    
+    // ===== LINGUISTIC AUDIT SUMMARY =====
+    linguistic_audit_summary: generateLinguisticSummary(session),
+    
+    // ===== LEVEL-UP STATUS =====
+    leveling_status: levelingService.getUserStatus(session.userId),
     
     // Diplomatic Fix - The Perfect Response
     diplomatic_fix: {
@@ -1073,6 +1116,70 @@ function generateFollowUpPrompts(scenario, level) {
   };
   
   return followUps[level] || followUps.B2;
+}
+
+/**
+ * Generate linguistic audit summary from session audits
+ */
+function generateLinguisticSummary(session) {
+  const audits = session.linguistic_audits || [];
+  
+  if (audits.length === 0) {
+    return {
+      total_audits: 0,
+      message: 'No linguistic audits performed'
+    };
+  }
+  
+  // Get most recent audit
+  const latestAudit = audits[audits.length - 1].audit;
+  
+  // Calculate average detected level
+  const levelCounts = {};
+  audits.forEach(a => {
+    const level = a.audit.current_level;
+    levelCounts[level] = (levelCounts[level] || 0) + 1;
+  });
+  
+  const mostCommonLevel = Object.keys(levelCounts).reduce((a, b) => 
+    levelCounts[a] > levelCounts[b] ? a : b
+  );
+  
+  // Aggregate all mistakes
+  const allMistakes = audits.flatMap(a => a.audit.top_3_mistakes);
+  const mistakeTypes = {};
+  allMistakes.forEach(m => {
+    mistakeTypes[m.type] = (mistakeTypes[m.type] || 0) + 1;
+  });
+  
+  // Get all false friends detected
+  const falseFriends = audits.flatMap(a => a.audit.false_friends_detected);
+  
+  // Calculate average soft skill score
+  const avgSoftSkill = audits.reduce((sum, a) => sum + a.audit.soft_skill_score, 0) / audits.length;
+  
+  // Calculate average hesitation ratio
+  const avgHesitation = audits.reduce((sum, a) => sum + a.audit.hesitation_ratio.ratio, 0) / audits.length;
+  
+  return {
+    total_audits: audits.length,
+    most_detected_level: mostCommonLevel,
+    latest_detected_level: latestAudit.current_level,
+    latest_confidence: latestAudit.confidence_percentage,
+    average_soft_skill_score: Math.round(avgSoftSkill * 10) / 10,
+    average_hesitation_ratio: Math.round(avgHesitation * 100) / 100,
+    false_friends_detected: falseFriends.length > 0 ? falseFriends : null,
+    common_mistake_types: mistakeTypes,
+    power_vocabulary_suggestions: audits
+      .filter(a => a.audit.power_vocabulary_suggestion)
+      .map(a => a.audit.power_vocabulary_suggestion),
+    level_progression: audits.map(a => ({
+      timestamp: a.timestamp,
+      detected_level: a.audit.current_level,
+      confidence: a.audit.confidence_percentage
+    })),
+    summary: `Detected as ${mostCommonLevel} speaker (latest: ${latestAudit.current_level} with ${latestAudit.confidence_percentage}% confidence). ${falseFriends.length > 0 ? `Warning: ${falseFriends.length} false friend(s) detected.` : 'No false friends detected.'} Soft skills: ${Math.round(avgSoftSkill * 10) / 10}/10.`
+  };
 }
 
 module.exports = {
