@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crisis Coach - The Fluency Lab</title>
+    <link rel="stylesheet" href="crisis-coach.css">
+</head>
+<body>
+    <!-- Matrix Rain Background Effect -->
+    <canvas id="matrix-bg"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🚨</span>
+                <h1>CRISIS COACH</h1>
+                <span class="subtitle">// High-Pressure Training Mode</span>
+            </div>
+            <div class="status-indicator crisis-mode">
+                <span class="status-dot pulsing"></span>
+                <span>CRISIS MODE ACTIVE</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Crisis Interface -->
+    <main class="crisis-dashboard">
+        <div class="container">
+            
+            <!-- Crisis Scenario Setup -->
+            <section id="setupSection" class="setup-section">
+                <div class="terminal-window">
+                    <div class="terminal-header">
+                        <span class="terminal-title">🎯 CRISIS SCENARIO SELECTION</span>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="input-group">
+                            <label>Your English Level:</label>
+                            <select id="userLevel" class="level-select">
+                                <option value="B1">B1 - Intermediate</option>
+                                <option value="B2">B2 - Upper Intermediate</option>
+                                <option value="C1">C1 - Advanced</option>
+                                <option value="C2">C2 - Proficient</option>
+                            </select>
+                        </div>
+                        
+                        <div class="input-group">
+                            <label>Training Week:</label>
+                            <select id="weekNumber" class="week-select">
+                                <option value="1">Week 1 - Casual Conversations</option>
+                                <option value="2" selected>Week 2 - Crisis Scenarios 🚨</option>
+                                <option value="3">Week 3 - Technical Presentations</option>
+                                <option value="4">Week 4 - Negotiations</option>
+                            </select>
+                        </div>
+
+                        <button id="startCrisisBtn" class="btn-crisis">
+                            <span class="btn-icon">🚀</span>
+                            START CRISIS SIMULATION
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Crisis Active Section (Hidden initially) -->
+            <section id="crisisSection" class="crisis-section" style="display: none;">
+                
+                <!-- Crisis Alert Container with Pulsing Red Border -->
+                <div id="crisisAlert" class="crisis-alert-container">
+                    
+                    <!-- Timer Bar -->
+                    <div class="crisis-timer">
+                        <div class="timer-info">
+                            <span class="timer-icon">⏱️</span>
+                            <span>Time Remaining: <span id="timeRemaining">10:00</span></span>
+                        </div>
+                        <div class="timer-bar">
+                            <div id="timerProgress" class="timer-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Scenario Description -->
+                    <div class="scenario-card">
+                        <div class="scenario-header">
+                            <span class="scenario-icon">🔥</span>
+                            <h2 id="scenarioTitle">Loading Crisis...</h2>
+                        </div>
+                        <p id="scenarioDescription" class="scenario-text">
+                            Preparing high-pressure scenario...
+                        </p>
+                        <div class="scenario-meta">
+                            <span class="difficulty-badge" id="difficultyBadge">HIGH</span>
+                            <span class="level-badge" id="levelBadge">C2</span>
+                        </div>
+                    </div>
+
+                    <!-- Chat Interface -->
+                    <div class="chat-container">
+                        <div id="chatMessages" class="chat-messages">
+                            <!-- Messages will be dynamically added here -->
+                        </div>
+                        
+                        <!-- Input Area with I'm Stuck Button -->
+                        <div class="chat-input-container">
+                            <div class="help-button-wrapper">
+                                <button id="stuckBtn" class="btn-stuck" title="Get a vocabulary hint">
+                                    <span class="stuck-icon">💡</span>
+                                    I'm Stuck
+                                </button>
+                            </div>
+                            
+                            <div class="input-wrapper">
+                                <textarea 
+                                    id="userResponse" 
+                                    class="crisis-input"
+                                    placeholder="Type your response here... (Press Enter to send)"
+                                    rows="3"
+                                ></textarea>
+                                <button id="sendBtn" class="btn-send">
+                                    <span>SEND ▶</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vocabulary Hint Panel (Hidden initially) -->
+                    <div id="hintPanel" class="hint-panel" style="display: none;">
+                        <div class="hint-header">
+                            <span class="hint-icon">💡</span>
+                            <h3>Technical Vocabulary Hint</h3>
+                            <button id="closeHintBtn" class="btn-close-hint">×</button>
+                        </div>
+                        <div class="hint-content">
+                            <div class="hint-term">
+                                <strong>Suggested Term:</strong>
+                                <span id="hintTerm" class="term-highlight">bottleneck</span>
+                            </div>
+                            <div class="hint-definition">
+                                <strong>Meaning:</strong>
+                                <p id="hintDefinition">A point of congestion in a system that limits overall performance.</p>
+                            </div>
+                            <div class="hint-example">
+                                <strong>Example Usage:</strong>
+                                <p id="hintExample">"We've identified a bottleneck in the database connection pool."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Crisis Metrics -->
+                    <div class="crisis-metrics">
+                        <div class="metric-item">
+                            <span class="metric-label">Jargon Score</span>
+                            <span id="jargonScore" class="metric-value">0/10</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Tone</span>
+                            <span id="toneClass" class="metric-value tone-neutral">Neutral</span>
+                        </div>
+                        <div class="metric-item">
+                            <span class="metric-label">Coach Patience</span>
+                            <span id="coachPatience" class="metric-value">8/10</span>
+                        </div>
+                    </div>
+
+                    <!-- End Crisis Button -->
+                    <div class="crisis-controls">
+                        <button id="endCrisisBtn" class="btn-end-crisis">
+                            🏁 END CRISIS & GET AUDIT REPORT
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Crisis Report Section (Hidden initially) -->
+            <section id="reportSection" class="report-section" style="display: none;">
+                <div class="report-container">
+                    <div class="report-header">
+                        <h2>🚨 CRISIS AUDIT REPORT</h2>
+                        <span id="finalGrade" class="grade-badge">A</span>
+                    </div>
+                    
+                    <div class="report-content" id="reportContent">
+                        <!-- Report will be dynamically generated -->
+                    </div>
+
+                    <button id="newCrisisBtn" class="btn-primary">
+                        🔄 START NEW CRISIS
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="crisis-coach.js"></script>
+</body>
+</html>
