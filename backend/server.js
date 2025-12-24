@@ -5,6 +5,7 @@ const learningPathRouter = require('./routes/learningPath');
 const flashcardsRouter = require('./routes/flashcards');
 const authRouter = require('./routes/auth');
 const pricingRouter = require('./routes/pricing');
+const aiCoachRouter = require('./routes/aiCoach');
 const { optionalAuthenticate, authenticate } = require('./middleware/auth');
 
 const app = express();
@@ -27,6 +28,9 @@ app.use('/api/flashcards', authenticate, flashcardsRouter);
 // Dynamic pricing and lead scoring (requires authentication)
 app.use('/api/pricing', authenticate, pricingRouter);
 
+// AI Coach for interactive 10-minute sessions (requires authentication)
+app.use('/api/coach', authenticate, aiCoachRouter);
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'The Fluency Lab Backend is running' });
@@ -48,6 +52,12 @@ app.listen(PORT, () => {
   console.log('   POST /api/pricing/analyze-lead - Analyze lead score');
   console.log('   GET  /api/pricing/my-offers - Get personalized offers');
   console.log('   POST /api/pricing/simulate-potential-lead - Simulate C1 user with management errors');
+  console.log('\n🎯 AI Coach (10-minute Sessions):');
+  console.log('   POST /api/coach/start-session - Start coaching session');
+  console.log('   POST /api/coach/respond - Send message to coach');
+  console.log('   POST /api/coach/end-session - End session & get Flash Report');
+  console.log('   GET  /api/coach/topics - View available topics');
+  console.log('   GET  /api/coach/demo - See demo conversation');
   console.log('\n✅ Test Users Available:');
   console.log('   free@fluencylab.com / FluencyLab2024!');
   console.log('   student@fluencylab.com / FluencyLab2024!');
