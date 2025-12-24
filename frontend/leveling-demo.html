@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Leveling System Demo | The Fluency Lab</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .demo-container {
+      max-width: 900px;
+      background: white;
+      border-radius: 20px;
+      padding: 50px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+      font-size: 1.1rem;
+    }
+    
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+    
+    .feature-card {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+    }
+    
+    .feature-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    
+    .feature-desc {
+      font-size: 0.9rem;
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .cta-section {
+      text-align: center;
+      margin-top: 40px;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 16px 32px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+    
+    .btn-secondary:hover {
+      background: #667eea;
+      color: white;
+    }
+    
+    .level-colors {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .level-badge {
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .level-b1 {
+      background: #FFD93D;
+      color: #2c2c2c;
+    }
+    
+    .level-b2 {
+      background: #4A90E2;
+      color: white;
+    }
+    
+    .level-c1 {
+      background: #9B59B6;
+      color: white;
+    }
+    
+    .level-c2 {
+      background: #F39C12;
+      color: #2c2c2c;
+    }
+    
+    .info-box {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+    }
+    
+    .info-box h3 {
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+    
+    .info-box ul {
+      margin-left: 20px;
+      color: #555;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>🎯 Dynamic Leveling System</h1>
+    <p class="subtitle">AI-Powered CEFR Level Detection & Automatic Progression</p>
+    
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-title">Linguistic Auditor</div>
+        <div class="feature-desc">Analyzes vocabulary, grammar, false friends, and soft skills in real-time</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">📈</div>
+        <div class="feature-title">Auto Level-Up</div>
+        <div class="feature-desc">3 consecutive C1 audits → Instant B2→C1 upgrade notification</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-title">Visual Report Card</div>
+        <div class="feature-desc">Color-coded progress bars comparing you vs. Google Senior Dev</div>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">🔓</div>
+        <div class="feature-title">Content Unlock</div>
+        <div class="feature-desc">Automatically unlocks Week 3 Negotiation scenarios on level-up</div>
+      </div>
+    </div>
+    
+    <div class="level-colors">
+      <div class="level-badge level-b1">
+        <span>🟡</span>
+        <span>B1 - Intermediate</span>
+      </div>
+      <div class="level-badge level-b2">
+        <span>🔵</span>
+        <span>B2 - Upper Intermediate</span>
+      </div>
+      <div class="level-badge level-c1">
+        <span>🟣</span>
+        <span>C1 - Advanced</span>
+      </div>
+      <div class="level-badge level-c2">
+        <span>🟠</span>
+        <span>C2 - Mastery</span>
+      </div>
+    </div>
+    
+    <div class="info-box">
+      <h3>How It Works:</h3>
+      <ul>
+        <li><strong>Step 1:</strong> Complete crisis scenarios in the Crisis Coach</li>
+        <li><strong>Step 2:</strong> AI analyzes your technical vocabulary, grammar, and soft skills</li>
+        <li><strong>Step 3:</strong> After 3 sessions above your level → Level-up notification!</li>
+        <li><strong>Step 4:</strong> Accept upgrade → New content unlocks automatically</li>
+        <li><strong>Step 5:</strong> View your Audit Report Card with visual comparisons</li>
+      </ul>
+    </div>
+    
+    <div class="cta-section">
+      <div class="btn-group">
+        <a href="crisis-coach.html" class="btn btn-primary">
+          <span>🚀</span>
+          <span>Start Crisis Session</span>
+        </a>
+        <a href="audit-report.html" class="btn btn-secondary">
+          <span>📊</span>
+          <span>View Report Card</span>
+        </a>
+      </div>
+      
+      <div style="margin-top: 30px; color: #666; font-size: 0.9rem;">
+        <p><strong>API Endpoints:</strong></p>
+        <p>GET /api/leveling/status/:userId</p>
+        <p>POST /api/leveling/accept-level-up</p>
+        <p>GET /api/leveling/demo (Documentation)</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
