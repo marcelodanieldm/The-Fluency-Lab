@@ -8,6 +8,7 @@ const natural = require('natural');
 const tokenizer = new natural.WordTokenizer();
 const linguisticAuditor = require('./linguisticAuditor');
 const levelingService = require('./levelingService');
+const dataAnalytics = require('./dataAnalytics');
 
 // Crisis Scenarios - Each with specific context and pressure points
 const CRISIS_SCENARIOS = {
@@ -282,12 +283,21 @@ function processCrisisResponse(sessionId, userMessage) {
   // Record audit in leveling system
   const levelingResult = levelingService.recordAudit(session.userId, linguisticAudit);
   
+  // ===== DATA ANALYTICS: Track Phrasal Verb Usage =====
+  const phrasalVerbTracking = dataAnalytics.recordPhrasalVerbUsage(
+    session.userId,
+    linguisticAudit.current_level,
+    userMessage,
+    linguisticAudit
+  );
+  
   // Store audit in session for final report
   session.linguistic_audits = session.linguistic_audits || [];
   session.linguistic_audits.push({
     timestamp: now,
     audit: linguisticAudit,
-    leveling_result: levelingResult
+    leveling_result: levelingResult,
+    phrasal_verb_tracking: phrasalVerbTracking
   });
   // ===== END LINGUISTIC AUDIT =====
   
@@ -311,6 +321,18 @@ function processCrisisResponse(sessionId, userMessage) {
     pressure_level: coachResponse.pressure_level,
     feedback: coachResponse.feedback
   });
+  
+  // ===== DATA ANALYTICS: Check for Content Gaps =====
+  // After processing response, check if B2 phrasal verb threshold exceeded
+  const phrasalVerbGap = dataAnalytics.analyzeB2PhrasalVerbGap();
+  if (phrasalVerbGap.threshold_exceeded) {
+    const notification = dataAnalytics.generateStakeholderNotification(phrasalVerbGap);
+    console.log('📊 STAKEHOLDER ALERT: Content gap detected!');
+    console.log(`   → ${phrasalVerbGap.failure_rate}% of B2 users failing with phrasal verbs`);
+    console.log(`   → Notification ID: ${notification.id}`);
+    console.log(`   → Recommendation: ${notification.recommendation.action}`);
+  }
+  // ===== END ANALYTICS CHECK =====
   
   // Check if should interrupt (high pressure scenarios)
   if (shouldInterrupt(session)) {

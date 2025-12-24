@@ -8,6 +8,7 @@ const pricingRouter = require('./routes/pricing');
 const aiCoachRouter = require('./routes/aiCoach');
 const crisisCoachRouter = require('./routes/crisisCoach');
 const levelingRouter = require('./routes/leveling');
+const analyticsRouter = require('./routes/analytics');
 const { optionalAuthenticate, authenticate } = require('./middleware/auth');
 
 const app = express();
@@ -38,6 +39,9 @@ app.use('/api/crisis', authenticate, crisisCoachRouter);
 
 // Dynamic Leveling System with level-up notifications (requires authentication)
 app.use('/api/leveling', authenticate, levelingRouter);
+
+// Data Analytics for content gap detection and stakeholder notifications (requires authentication)
+app.use('/api/analytics', authenticate, analyticsRouter);
 
 // Health check
 app.get('/health', (req, res) => {
